@@ -6,8 +6,7 @@
  * Time: 3:24 PM
  */
 
-namespace App\Modules\Filters\CommonStaticFilter\CertainFunc;
-
+namespace HttpFilter\IsolatedFilter;
 
 use Illuminate\Database\Eloquent\Builder;
 

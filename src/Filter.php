@@ -6,7 +6,7 @@
  * Time: 11:32 AM
  */
 
-namespace App\Modules\Filters;
+namespace HttpFilter;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

@@ -6,25 +6,11 @@
  * Time: 5:45 PM
  */
 
-namespace App\Modules\Filters;
-
-use App\Modules\Exceptions\SeriousException;
+namespace HttpFilter;
+use HttpFilter\Exceptions\InValidSilentFilterException;
 use ReflectionClass;
 
 
-/**
- *
- * 有些过滤器　和是否传递参数无关　
- * 比如　分页　　当不传递　page　参数时
- * 也需要　添加过滤器　 page=默认值　(1)
- *
- * 实现方式
- *
- * 获取到所有　trait
- *
- * 将　trait 中的　方法　
- *
- */
 trait InvokeFilterRegardlessRequest
 {
     static $needInvokeFilterMethods = [];
@@ -95,10 +81,7 @@ trait InvokeFilterRegardlessRequest
 
             if (strpos($property, $invoke_property_prefix) === 0) {
                 if ( !is_string($val)) {
-                    throw new SeriousException(
-                        "默认触发的　http 过滤器　的函数名 必须是字符串
-                    定义的属性　以　invoke_regardless_request_property　命名"
-                    );
+                    throw new InValidSilentFilterException();
                 }
                 $this->setNeedInvokeFilterMethods($val);
             }

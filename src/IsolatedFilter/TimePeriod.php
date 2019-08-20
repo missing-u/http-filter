@@ -6,7 +6,7 @@
  * Time: 3:30 PM
  */
 
-namespace App\Modules\Filters\CommonStaticFilter\CertainFunc;
+namespace HttpFilter\IsolatedFilter;
 
 
 use Carbon\Carbon;

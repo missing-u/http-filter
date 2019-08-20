@@ -42,6 +42,18 @@
 ###有些过滤器　和是否传递参数无关　
 
 
+  有些过滤器　和是否传递参数无关　
+  比如　分页　　当不传递　page　参数时
+  也需要　添加过滤器　 page=默认值　(1)
+ 
+  实现方式
+ 
+  获取到所有　trait
+ 
+  将　trait 中的　方法　
+ 
+
+
 
 
 参考　实现　InvokeFilterRegardlessRequest

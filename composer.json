@@ -1,6 +1,6 @@
 {
     "name": "missing-u/http-filter",
-    "description": "对传递的参数进行",
+    "description": "laravel 对传递的参数进行",
     "license": "MIT",
     "authors": [
         {
@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Filter\\": "src/"
+            "HttpFilter\\": "src/"
         }
     },
     "require": {

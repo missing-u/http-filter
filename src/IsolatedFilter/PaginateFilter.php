@@ -6,7 +6,7 @@
  * Time: 3:05 PM
  */
 
-namespace App\Modules\Filters\CommonStaticFilter\CertainFunc;
+namespace HttpFilter\IsolatedFilter;
 
 //这里对简单分页有问题
 trait PaginateFilter
