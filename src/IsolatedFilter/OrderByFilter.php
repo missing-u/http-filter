@@ -10,13 +10,19 @@ namespace HttpFilter\IsolatedFilter;
 
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Trait OrderByFilter
+ * @package HttpFilter\IsolatedFilter
+ */
 trait OrderByFilter
 {
-    protected $order_column_name = "id";
-
+    static $invoke_regardless_request_property_order_by = "order_by";
 
     // 避免重名
-    static $invoke_regardless_request_property_order_by = "order_by";
+
+    protected $order_column_name = "id";
+
+    protected $return_row_order = "desc";
 
     /**
      * @param string $return_row_order
@@ -25,8 +31,6 @@ trait OrderByFilter
     {
         $this->return_row_order = $return_row_order;
     }
-
-    protected $return_row_order = "desc";
 
     /**
      * @param string $order_column_name

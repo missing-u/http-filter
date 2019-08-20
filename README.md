@@ -21,15 +21,15 @@
                 ];
             }
             
-            if (isset($pass_params[ 'idcard' ])) {
-                $where[ 'idcard' ] = [
-                    'idcard','like',$pass_params['idcard']
-                ];
-            }
+           if (isset($pass_params[ 'idcard' ])) {
+               $where[ 'idcard' ] = [
+                   'idcard','like',$pass_params['idcard']
+               ];
+           }
     
-            TradeApplicant::where(
-                $where
-            );
+           TradeApplicant::where(
+               $where
+           );
     
 ```
     

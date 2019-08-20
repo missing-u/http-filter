@@ -27,6 +27,35 @@ trait TimePeriod
 
     public function create_time()
     {
+        $point = $this->getPoint();
+
+        [
+            'begin' => $start,
+            'end'   => $end,
+        ] = $point;
+
+        return $this->builder
+            ->where(
+                [
+                    [
+                        $this->getTable() . '.' . $this->time_column_name,
+                        '>',
+                        Carbon::createFromTimestamp($start)->toDateTimeString(),
+                    ],
+                    [
+                        $this->getTable() . '.' . $this->time_column_name,
+                        '<',
+                        Carbon::createFromTimestamp($end)->toDateTimeString(),
+                    ],
+                ]
+            );
+
+    }
+
+    //这里有问题　绑定死了
+    //但是无所谓　这里不影响主逻辑
+    public function getPoint()
+    {
         //beigin_time   兼容　start
         //end_time      兼容　end
         $start_time = $this->request->input("start_time", 0);
@@ -52,25 +81,9 @@ trait TimePeriod
         }
 
 
-        return $this->builder
-            ->where(
-                [
-                    [
-                        $this->getTable() . '.' . $this->time_column_name,
-                        '>',
-                        Carbon::createFromTimestamp($begin)->toDateTimeString(),
-                    ],
-                    [
-                        $this->getTable() . '.' . $this->time_column_name,
-                        '<',
-                        Carbon::createFromTimestamp($last)->toDateTimeString(),
-                    ],
-                ]
-            );
-
-//        ->whereTime(
-//            $this->time_column_name, '<', Carbon::createFromTimestamp($last)
-//                ->toDateTimeString()
-//        );
+        return [
+            'begin' => $begin,
+            'end'   => $last,
+        ];
     }
 }

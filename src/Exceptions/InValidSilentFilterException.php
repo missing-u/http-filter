@@ -15,8 +15,7 @@ class InValidSilentFilterException extends BaseHttpFilterException
 {
     public function __construct()
     {
-        $message = "默认触发的　http 过滤器　的函数名 必须是字符串
-                    定义的属性　以　invoke_regardless_request_property　命名";
+        $message = "类型错误　invoke_regardless_request_property　为前缀的静态属性必须为字符串(此前缀的属性为默认触发的http过滤器)";
 
         parent::__construct($message);
     }

@@ -7,14 +7,17 @@
  */
 
 namespace HttpFilter;
+
 use HttpFilter\Exceptions\InValidSilentFilterException;
 use ReflectionClass;
+use ReflectionException;
+use TheSeer\Tokenizer\Exception;
+use Throwable;
 
 
-trait InvokeFilterRegardlessRequest
+trait InvokeFilterRegardlessRequestTrait
 {
     static $needInvokeFilterMethods = [];
-
 
     /**
      * @return array
@@ -33,11 +36,6 @@ trait InvokeFilterRegardlessRequest
         self::$needInvokeFilterMethods[] = $needInvokeFilterMethod;
     }
 
-//    public function InvokeFilterRegardlessRequest()
-//    {
-//
-//    }
-
     /**
      * 一个参数不能同时代表两种含义　
      * 换句话说　一个参数　不能同时触发两个函数　
@@ -48,36 +46,21 @@ trait InvokeFilterRegardlessRequest
      * 类应该保持功能单一　
      * 所以　invoke_regardless_request 去字符串类型　而非　数组类型
      */
-//    public function generateNeedInvokeFilterMethods()
-//    {
-//        $register_traits = get_declared_traits();
-//
-//        array_map(function ($trait) {
-//            if (isset($trait::$invoke_regardless_request)) {
-//                self::setNeedInvokeFilterMethods($trait::$invoke_regardless_request);
-//            }
-//        }, $register_traits);
-//
-////        return $this->getNeedInvokeFilterMethods();
-//    }
-
-
-    /**
-     * @throws \ReflectionException
-     */
     public function generateNeedInvokeFilterMethods()
     {
-        $reflect = new ReflectionClass(static::class);
+        try {
+            $reflect = new ReflectionClass(static::class);
+        } catch (ReflectionException $e) {
+            //实际上永远不会允许到这里　
+            //暂时没有找到抑制错误的方法　先使用一个　无用的　try catch
+        }
 
         $properties = $reflect->getStaticProperties();
 
-
-//        dd($properties);
         array_map(function ($property, $val) {
 
             //trait 不能定义常量 　　属性中定义的　static property 的　前缀　
             $invoke_property_prefix = "invoke_regardless_request_property";
-
 
             if (strpos($property, $invoke_property_prefix) === 0) {
                 if ( !is_string($val)) {
