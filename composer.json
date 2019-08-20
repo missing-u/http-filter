@@ -1,0 +1,19 @@
+{
+    "name": "missing-u/http-filter",
+    "description": "对传递的参数进行",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "杨益民",
+            "email": "744541711@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Filter\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.2.0"
+    }
+}
