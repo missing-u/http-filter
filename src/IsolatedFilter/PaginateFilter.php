@@ -16,6 +16,8 @@ trait PaginateFilter
     //每页数量
     protected $per_page_size = 20;
 
+    protected $default_page_num = 1;
+
     /**
      * @param int $per_page_size
      */
@@ -23,8 +25,6 @@ trait PaginateFilter
     {
         $this->per_page_size = $per_page_size;
     }
-
-    protected $default_page_num = 1;
 
     public function size()
     {
