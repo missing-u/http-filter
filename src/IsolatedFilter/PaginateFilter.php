@@ -11,39 +11,45 @@ namespace HttpFilter\IsolatedFilter;
 //这里对简单分页有问题
 trait PaginateFilter
 {
-    static $invoke_regardless_request_property_size = "size";
+    protected static $auto_invoked_register_paginate = 'paginate';
 
-    //每页数量
-    protected $per_page_size = 20;
+    private $size_key = 'size';
 
-    protected $default_page_num = 1;
+    private $page_key = 'page';
 
-    /**
-     * @param int $per_page_size
-     */
-    public function setPerPageSize(int $per_page_size) : void
+    public function paginate()
     {
-        $this->per_page_size = $per_page_size;
-    }
+        $request = $this->request;
 
-    public function size()
-    {
-        //todo
-        // 如果直接使用下面的语句 非联表查询的时候会没有问题
-        // 但是联表查询(可能)的时候会有问题
-        //  $this->builder->getModel()->setPerPage( (int) $this->request->input("size",20));
+        $size_key = $this->size_key;
 
-        //现在的解决方式有缺陷
-        $size = $this->request->input("size", $this->per_page_size);
-        $page = $this->request->input("page", $this->default_page_num);
-        if ($page == 0) {
-            $page = 1;
-        }
-        --$page;
+        $page_key = $this->page_key;
+
+        $size = $request[ $size_key ] ?? 0;
+
+        $page = $request[ $page_key ] ?? 0;
+
+        $page = max(--$page, 0);
 
         $this->builder->offset($page * $size)->limit($size);
 
         return $this;
+    }
+
+    /**
+     * @param string $page_key
+     */
+    public function setPageKey(string $page_key)
+    {
+        $this->page_key = $page_key;
+    }
+
+    /**
+     * @param string $size_key
+     */
+    public function setSizeKey(string $size_key)
+    {
+        $this->size_key = $size_key;
     }
 
 }

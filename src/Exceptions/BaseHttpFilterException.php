@@ -8,9 +8,8 @@
 
 namespace HttpFilter\Exceptions;
 
-use Exception;
+use Throwable;
 
-class BaseHttpFilterException extends Exception
+interface BaseHttpFilterException extends Throwable
 {
-
 }

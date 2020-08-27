@@ -8,10 +8,12 @@
 
 namespace HttpFilter;
 
+use HttpFilter\Exceptions\InValidSilentFilterException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Scope;
+use ReflectionClass;
 
 /**
  * Class HttpFilter
@@ -19,21 +21,13 @@ use Illuminate\Database\Eloquent\Scope;
  */
 class Filter implements Scope
 {
-    use InvokeFilterRegardlessRequestTrait;
+    protected $filter_param_space = true;
 
-    /**
-     * @var Builder
-     */
     protected $builder;
 
-    /**
-     * @var $model Model
-     */
     protected $model;
 
     protected $request;
-
-    protected $default_filters = [];
 
     public function __construct(Request $request)
     {
@@ -41,46 +35,73 @@ class Filter implements Scope
     }
 
     /**
+     * 当调用 model::addGlobeScope($filter) 的时候,会执行到这里
      * @param Builder $builder
      * @param Model $model
-     * @return Builder
-     * @throws \ReflectionException
+     * @return void
+     * @throws Exception
      */
     public function apply(Builder $builder, Model $model)
     {
-        $this->model = $model;
+        // 对参数初始化赋值
+        {
+            $this->model = $model;
 
-        $this->builder = $builder;
+            $this->builder = $builder;
 
-        $filter_params = $this->get_filter_params();
+            $filter_params = $this->request->all();
 
-        array_map(function ($val, $name) {
-            if (method_exists($this, $name)
-            ) {
-                if ($this->request->has($name)) {
-                    call_user_func([$this, $name], $val);
+            $keys_in_request = array_keys($filter_params);
+        }
+
+        // 触发自定义函数定义的筛选条件
+        {
+            array_map(function ($val, $name) {
+                if (
+                    //哪怕 name 是恶意的 __construct 或者 apply  等 也不会造成影响
+                method_exists($this, $name)
+                ) {
+                    if ($this->filter_param_space) {
+                        $val = trim($val);
+                    }
+                    $this->$name($val);
                 }
-            }
-        }, $filter_params, array_keys($filter_params));
+            }, $filter_params, $keys_in_request);
+        }
 
-        $keys_in_request = $this->request->keys();
+        // 触发 以 auto_invoked_register_ 为前缀所注册的属性的函数的筛选条件
+        {
+            $default_invoke_methods = $this->getAutoInvokedProperties();
 
-        $this->generateNeedInvokeFilterMethods();
+            $diff_invoke_methods = array_diff($default_invoke_methods, $keys_in_request);
 
-        $default_invoke_methods = $this->getNeedInvokeFilterMethods();
-
-        $diff_invoke_methods = array_diff($default_invoke_methods, $keys_in_request);
-
-        array_map(function ($name) {
-            call_user_func([$this, $name]);
-        }, $diff_invoke_methods);
-
-        return $this->builder;
+            array_map(function ($name) {
+                $this->$name();
+            }, $diff_invoke_methods);
+        }
     }
 
-    public function get_filter_params()
+    public function getAutoInvokedProperties() : array
     {
-        return $this->request->all();
+        $properties = (new ReflectionClass(static::class))
+            ->getStaticProperties();
+
+        $final = [];
+
+        array_map(function ($property, $val) use (&$final) {
+            //trait 不能定义常量 　　属性中定义的　static property 的　前缀　
+            $invoke_property_prefix = 'auto_invoked_register_';
+
+            if (strpos($property, $invoke_property_prefix) === 0) {
+                if ( !is_string($val)) {
+                    throw new InValidSilentFilterException();
+                }
+
+                $final[] = $val;
+            }
+        }, array_keys($properties), $properties);
+
+        return $final;
     }
 
     public function getTable()

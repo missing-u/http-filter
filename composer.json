@@ -1,6 +1,6 @@
 {
     "name": "missing-u/http-filter",
-    "description": "laravel 对传递的参数进行",
+    "description": "借助scope实现的对列表参数的过滤",
     "license": "MIT",
     "authors": [
         {

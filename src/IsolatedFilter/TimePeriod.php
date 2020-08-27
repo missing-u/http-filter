@@ -8,82 +8,72 @@
 
 namespace HttpFilter\IsolatedFilter;
 
-
-use Carbon\Carbon;
-
 trait TimePeriod
 {
-    static $invoke_regardless_request_property_create_time = "create_time";
+    protected static $auto_invoked_register_create_time = 'create_time';
 
-    protected $time_column_name = "created_at";
+    private $time_column_name = 'created_at';
 
-    /**
-     * @param string $time_column_name
-     */
-    public function setTimeColumnName(string $time_column_name) : void
+    // 传递过来的参数 代表结束的时间戳的键名
+    private $pass_param_key_mean_timestamp_to = 'to';
+
+    // 传递过来的参数 代表开始的时间戳的键名
+    private $pass_param_key_mean_timestamp_from = 'from';
+
+    private $time_table = null;
+
+    public function create_time()
+    {
+        $to_key = $this->pass_param_key_mean_timestamp_to;
+
+        $from_key = $this->pass_param_key_mean_timestamp_from;
+
+        $time_column_name = $this->time_column_name;
+
+        $request = $this->request;
+
+        $from = $request[ $from_key ] ?? 0;
+
+        $to = $request[ $to_key ] ?? time();
+
+        $table = $this->time_table ?? $this->getTable();
+
+        $this->builder->where(
+            [
+                [
+                    $table . '.' . $time_column_name,
+                    '>=',
+                    $from,
+                ],
+                [
+                    $table . '.' . $time_column_name,
+                    '<=',
+                    $to,
+                ],
+            ]
+        );
+    }
+
+    public function setTimeColumnName(string $time_column_name)
     {
         $this->time_column_name = $time_column_name;
     }
 
-    public function create_time()
+    public function setPassParamKeyMeanTimestampTo(string $pass_param_key_mean_timestamp_to)
     {
-        $point = $this->getPoint();
-
-        [
-            'begin' => $start,
-            'end'   => $end,
-        ] = $point;
-
-        return $this->builder
-            ->where(
-                [
-                    [
-                        $this->getTable() . '.' . $this->time_column_name,
-                        '>',
-                        Carbon::createFromTimestamp($start)->toDateTimeString(),
-                    ],
-                    [
-                        $this->getTable() . '.' . $this->time_column_name,
-                        '<',
-                        Carbon::createFromTimestamp($end)->toDateTimeString(),
-                    ],
-                ]
-            );
-
+        $this->pass_param_key_mean_timestamp_to = $pass_param_key_mean_timestamp_to;
     }
 
-    //这里有问题　绑定死了
-    //但是无所谓　这里不影响主逻辑
-    public function getPoint()
+    public function setPassParamKeyMeanTimestampFrom(string $pass_param_key_mean_timestamp_from)
     {
-        //beigin_time   兼容　start
-        //end_time      兼容　end
-        $start_time = $this->request->input("start_time", 0);
-        $end_time   = $this->request->input("end_time", time());
+        $this->pass_param_key_mean_timestamp_from = $pass_param_key_mean_timestamp_from;
+    }
 
-        $start = $this->request->input("start", 0);
-        $end   = $this->request->input("end", time());
-
-        if ( !empty($start_time)) {
-            $begin = $start_time;
-        } elseif ( !empty($start)) {
-            $begin = $start;
-        } else {
-            $begin = 0;
-        }
-
-        if ( !empty($end_time)) {
-            $last = $end_time;
-        } elseif ( !empty($end)) {
-            $last = $end;
-        } else {
-            $last = time();
-        }
-
-
-        return [
-            'begin' => $begin,
-            'end'   => $last,
-        ];
+    /**
+     * @param null $time_table
+     */
+    public function setTimeTable($time_table)
+    {
+        $this->time_table = $time_table;
     }
 }
