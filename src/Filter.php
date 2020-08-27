@@ -59,6 +59,18 @@ class Filter implements Scope
             array_map(function ($val, $name) {
                 if (
                     //哪怕 name 是恶意的 __construct 或者 apply  等 也不会造成影响
+                    //因为有参数的类型和个数的约束(传递过来的只能是字符串或者数组)
+
+                    // builder的方法都是预编译过的
+                    // $this->builder->where('name','like',"%$name%")
+                    // 这种写法不会存在 SQL 注入
+
+                    // 职责单一
+                    // 这个类只应该处理过滤参数相关的功能
+                    // 不要在这里写和过滤无关的功能
+                    // 你要是写这种 和过滤完全无关又危险的函数
+                    // function danger(){ exec('rm -rf /') }
+                    // 那确实是危险的
                 method_exists($this, $name)
                 ) {
                     if ($this->filter_param_space) {

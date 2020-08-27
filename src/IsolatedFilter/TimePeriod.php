@@ -72,7 +72,7 @@ trait TimePeriod
     /**
      * @param null $time_table
      */
-    public function setTimeTable($time_table)
+    public function setTimeTable(string $time_table)
     {
         $this->time_table = $time_table;
     }

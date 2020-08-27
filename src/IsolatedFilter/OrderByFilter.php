@@ -47,7 +47,7 @@ trait OrderByFilter
     /**
      * @param null $order_table
      */
-    public function setOrderTable($order_table)
+    public function setOrderTable(string $order_table)
     {
         $this->order_table = $order_table;
     }
