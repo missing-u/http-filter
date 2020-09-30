@@ -13,9 +13,9 @@ trait PaginateFilter
 {
     protected static $auto_invoked_register_paginate = 'paginate';
 
-    private $size_key = 'size';
+    public $size_key = 'size';
 
-    private $page_key = 'page';
+    public $page_key = 'page';
 
     public function paginate()
     {
@@ -34,22 +34,6 @@ trait PaginateFilter
         $this->builder->offset($page * $size)->limit($size);
 
         return $this;
-    }
-
-    /**
-     * @param string $page_key
-     */
-    public function setPageKey(string $page_key)
-    {
-        $this->page_key = $page_key;
-    }
-
-    /**
-     * @param string $size_key
-     */
-    public function setSizeKey(string $size_key)
-    {
-        $this->size_key = $size_key;
     }
 
 }
