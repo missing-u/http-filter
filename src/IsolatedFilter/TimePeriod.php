@@ -32,9 +32,9 @@ trait TimePeriod
 
         $request = $this->request;
 
-        $from = $request[ $from_key ] ?? 0;
+        $from = (int)($request->{$from_key} ?? 0);
 
-        $to = $request[ $to_key ] ?? time();
+        $to = (int)($request->{$to_key} ?? time());
 
         $table = $this->time_table ?? $this->getTable();
 
